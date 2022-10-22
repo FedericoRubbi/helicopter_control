@@ -1,0 +1,13 @@
+# Target labels
+ ELF2UF2Build
+# Source files and their labels
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/CMakeFiles/ELF2UF2Build
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/CMakeFiles/ELF2UF2Build.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/CMakeFiles/ELF2UF2Build-complete.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-build.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-configure.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-download.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-install.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-mkdir.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-patch.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/src/elf2uf2/src/ELF2UF2Build-stamp/ELF2UF2Build-update.rule

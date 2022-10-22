@@ -1,0 +1,46 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: arm-none-eabi-gcc build active file",
+            "command": "/usr/bin/arm-none-eabi-gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/arm-none-eabi-gcc"
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: build",
+            "command": "build",
+            "targets": [
+                "main"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake template build task"
+        },
+        {
+            "label": "Lauch",
+            "type": "shell",
+            "command": "./scripts/launch.sh",
+            "group": "build",
+            "presentation": {
+              "reveal": "always",
+              "panel": "new"
+            }
+          }
+    ]
+}

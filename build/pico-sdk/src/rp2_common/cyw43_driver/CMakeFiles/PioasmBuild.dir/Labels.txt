@@ -1,0 +1,13 @@
+# Target labels
+ PioasmBuild
+# Source files and their labels
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/CMakeFiles/PioasmBuild
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/CMakeFiles/PioasmBuild.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/CMakeFiles/PioasmBuild-complete.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-build.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-configure.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-download.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-install.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-mkdir.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-patch.rule
+/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pico-sdk/src/rp2_common/cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-update.rule

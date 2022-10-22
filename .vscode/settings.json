@@ -1,0 +1,9 @@
+{
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "stdlib.h": "c"
+    },
+    "cmake.configureArgs": [
+        "-DPICO_BOARD=waveshare_rp2040_zero",
+    ]
+}
