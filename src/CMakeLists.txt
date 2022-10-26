@@ -1,11 +1,14 @@
 add_executable(main main.cpp)
 
+# Add include paths
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/lib
+)
+
 # pull in common dependencies
-target_link_libraries(main PUBLIC
-    RF24
+target_link_libraries(main PRIVATE
     pico_stdlib
-    hardware_spi
-    hardware_gpio
 )
 
 # Stdio output is sent to USB for debugging instead of UART.
