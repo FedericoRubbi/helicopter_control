@@ -1,3 +1,0 @@
-/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pioasm/CMakeFiles/pioasm.dir
-/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pioasm/CMakeFiles/edit_cache.dir
-/home/user/Documents/UniTn/Embedded_software_for_the_IoT/helicopter_control/build/pioasm/CMakeFiles/rebuild_cache.dir
