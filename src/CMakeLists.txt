@@ -1,14 +1,17 @@
 add_executable(main main.cpp)
 
 # Add include paths
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/lib
+target_include_directories(main
+    PUBLIC ${CMAKE_SOURCE_DIR}
+    PUBLIC ${CMAKE_SOURCE_DIR}/lib/
 )
 
 # pull in common dependencies
-target_link_libraries(main PRIVATE
+target_link_libraries(main PUBLIC
     pico_stdlib
+    hardware_gpio
+    hardware_i2c
+    ins
 )
 
 # Stdio output is sent to USB for debugging instead of UART.

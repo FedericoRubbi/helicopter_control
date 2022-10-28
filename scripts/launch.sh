@@ -2,6 +2,7 @@
 echo "Loading program..."
 if cp "$PWD/build/src/main.uf2" "/media/$USER/RPI-RP2/main.uf2" ; then
     echo "Program loaded."
+    rm -r "$PWD/build"
 else
     echo "Error in loading."
 fi

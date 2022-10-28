@@ -1,4 +1,4 @@
-add_library(transmitter STATIC transmitter.cpp)
+add_library(transmitter transmitter.cpp transmitter.h)
 
 # pull in common dependencies
 target_link_libraries(transmitter PRIVATE

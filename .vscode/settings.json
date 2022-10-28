@@ -1,7 +1,21 @@
 {
     "cmake.configureOnOpen": true,
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "compare": "c",
+        "optional": "c",
+        "random": "c",
+        "limits": "c",
+        "memory": "c",
+        "new": "c",
+        "numeric": "c",
+        "ranges": "c",
+        "*.tcc": "c",
+        "cmath": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "ostream": "cpp"
     },
     "cmake.configureArgs": [
         "-DPICO_BOARD=waveshare_rp2040_zero",

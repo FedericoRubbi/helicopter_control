@@ -3,3 +3,4 @@
 # is cloned to in your project
 include(RF24/CMakeLists.txt)
 add_subdirectory(transmitter)
+add_subdirectory(ins)
