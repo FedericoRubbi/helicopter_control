@@ -6,17 +6,6 @@
 // INS configurations.
 #define INS_DEFAULT_ADDR 0x50 // keep default address
 #define INS_DEFAULT_BAUDRATE 115200
-// Uncomment flags to select data to read.
-#define INS_READ_TIME
-#define INS_READ_ACC
-#define INS_READ_GYRO
-//#define INS_READ_MAG
-#define INS_READ_ANGLE
-//#define INS_READ_DSTATUS
-#define INS_READ_PRESS
-//#define INS_READ_LONLAT
-//#define INS_READ_GPS
-#define INS_READ_QUAT
 
 // Command registers address.
 #define INS_SAVE 0x00
@@ -97,7 +86,6 @@
 #define INS_DIO_MODE_GPS 5
 
 // Data macros and structs.
-#define INS_DATA_LEN 8 // bytes of each chunk
 #define INS_SCALE_TEMP (1.0 / 100.0)
 #define INS_SCALE_ACC (16.0 / 32768.0)
 #define INS_SCALE_GYRO (2000.0 / 32768.0)
@@ -119,87 +107,39 @@ struct Time_s
     uint16_t millisecond;
 };
 
-struct Acc_s
-{
-    int16_t a[3];
-    int16_t t;
-};
-
-struct Gyro_s
-{
-    int16_t w[3];
-    int16_t t;
-};
-
-struct Mag_s
-{
-    int16_t h[3];
-    int16_t t;
-};
-
-struct Angle_s
-{
-    int16_t angle[3];
-    int16_t t;
-};
-
-struct DStatus_s
-{
-    int16_t DStatus[4];
-};
-
-struct Press_s
-{
-    int32_t pressure;
-    int32_t altitude;
-};
-
-struct LonLat_s
-{
-    int32_t lon;
-    int32_t lat;
-};
-
-struct GPS_s
-{
-    int16_t GPSHeight;
-    int16_t GPSYaw;
-    int32_t GPSVelocity;
-};
-
-struct Quat_s
-{
-    int16_t q[4];
-};
-
-struct RawData_s
+struct RawData_s // 74 bytes
 {
     struct Time_s time;
-    struct Acc_s acc;
-    struct Gyro_s gyro;
-    struct Mag_s mag;
-    struct Angle_s angles;
-    struct DStatus_s dstatus;
-    struct Press_s press;
-    struct LonLat_s lonlat;
-    struct GPS_s gpsv;
-    struct Quat_s quat;
+    int16_t acc[3];
+    int16_t gyro[3];
+    int16_t mag[3];
+    int16_t angle[3];
+    int16_t temperature;
+    int16_t dstatus[4];
+    int32_t pressure;
+    int32_t altitude;
+    int32_t longitude;
+    int32_t latitude;
+    int16_t gps_height;
+    int16_t gps_yaw;
+    uint32_t gps_velocity;
+    int16_t quat[4];
 };
 
-struct INS_s
+struct INS_s // 74 + 106 bytes
 {
     struct RawData_s raw_data;
     struct Time_s time;
-    float temperature;
     float acceleration[3];
     float angular_velocity[3];
-    uint16_t magnetic_field[3];
+    int16_t magnetic_field[3];
     float angle[3];
+    float temperature;
     int16_t dstatus[4];
     float pressure;
     float altitude;
-    long longitude;
-    long latitude;
+    int32_t longitude;
+    int32_t latitude;
     float gps_height;
     float gps_yaw;
     float gps_velocity;
@@ -207,16 +147,6 @@ struct INS_s
 };
 
 static inline void read_register(uint8_t, uint8_t[], uint8_t);
-static inline void read_time(struct RawData_s *);
-static inline void read_acc(struct RawData_s *);
-static inline void read_gyro(struct RawData_s *);
-static inline void read_mag(struct RawData_s *);
-static inline void read_angle(struct RawData_s *);
-static inline void read_dstatus(struct RawData_s *);
-static inline void read_press(struct RawData_s *);
-static inline void read_lonlat(struct RawData_s *);
-static inline void read_gps(struct RawData_s *);
-static inline void read_quat(struct RawData_s *);
 void read_data(struct INS_s *);
 
 #endif // INS_H
