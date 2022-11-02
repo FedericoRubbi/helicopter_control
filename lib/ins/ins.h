@@ -5,7 +5,21 @@
 
 // INS configurations.
 #define INS_DEFAULT_ADDR 0x50 // keep default address
-#define INS_DEFAULT_BAUDRATE 115200
+#define INS_MAX_BAUDRATE 400000 // Baudrate in Hz
+#define INS_DEFAULT_BAUDRATE INS_MAX_BAUDRATE
+// Read options for small optimizations. Uncomment to select.
+#define INS_READ_TIME
+#define INS_READ_ACC
+#define INS_READ_GYRO
+//#define INS_READ_MAG
+#define INS_READ_ANGLE
+//#define INS_READ_TEMP
+//#define INS_READ_DSTATUS
+//#define INS_READ_PRESS
+#define INS_READ_ALTITUDE
+//#define INS_READ_LATLON
+//#define INS_READ_GPS
+#define INS_READ_QUAT
 
 // Command registers address.
 #define INS_SAVE 0x00
@@ -90,14 +104,14 @@
 #define INS_SCALE_ACC (16.0 / 32768.0)
 #define INS_SCALE_GYRO (2000.0 / 32768.0)
 #define INS_SCALE_ANGLE (180.0 / 32768.0)
+#define INS_SCALE_DSTATUS (3.3 / 1024.0) // for analog input
 #define INS_SCALE_ALTITUDE (1.0 / 100.0)
 #define INS_SCALE_GPSH (1.0 / 10.0)
 #define INS_SCALE_GPSY (1.0 / 10.0)
 #define INS_SCALE_GPSV (1.0 / 1000.0)
 #define INS_SCALE_QUAT (1.0 / 32768.0)
 
-struct Time_s
-{
+struct Time_s {
     uint8_t year;
     uint8_t month;
     uint8_t day;
@@ -107,8 +121,7 @@ struct Time_s
     uint16_t millisecond;
 };
 
-struct RawData_s // 74 bytes
-{
+struct RawData_s {
     struct Time_s time;
     int16_t acc[3];
     int16_t gyro[3];
@@ -116,7 +129,7 @@ struct RawData_s // 74 bytes
     int16_t angle[3];
     int16_t temperature;
     int16_t dstatus[4];
-    int32_t pressure;
+    uint32_t pressure;
     int32_t altitude;
     int32_t longitude;
     int32_t latitude;
@@ -124,10 +137,9 @@ struct RawData_s // 74 bytes
     int16_t gps_yaw;
     uint32_t gps_velocity;
     int16_t quat[4];
-};
+} __packed; // explicity disable struct padding
 
-struct INS_s // 74 + 106 bytes
-{
+struct INS_s {
     struct RawData_s raw_data;
     struct Time_s time;
     float acceleration[3];
@@ -136,7 +148,7 @@ struct INS_s // 74 + 106 bytes
     float angle[3];
     float temperature;
     int16_t dstatus[4];
-    float pressure;
+    uint32_t pressure;
     float altitude;
     int32_t longitude;
     int32_t latitude;
@@ -147,6 +159,7 @@ struct INS_s // 74 + 106 bytes
 };
 
 static inline void read_register(uint8_t, uint8_t[], uint8_t);
-void read_data(struct INS_s *);
+void format_data(struct INS_s*);
+void read_data(struct INS_s*);
 
 #endif // INS_H
