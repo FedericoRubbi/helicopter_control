@@ -4,3 +4,4 @@
 include(RF24/CMakeLists.txt)
 add_subdirectory(transmitter)
 add_subdirectory(ins)
+add_subdirectory(control)

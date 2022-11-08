@@ -12,6 +12,7 @@ target_link_libraries(main PUBLIC
     hardware_gpio
     hardware_i2c
     ins
+    control
 )
 
 # Stdio output is sent to USB for debugging instead of UART.
