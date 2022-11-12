@@ -21,7 +21,7 @@ void format_data(struct INS_s* ins)
 #endif
 #ifdef INS_READ_ACC
     for (uint8_t i = 0; i < 3; ++i)
-        ins->acceleration[i] = (float)(ins->raw_data.acc[i] * INS_SCALE_ACC);
+        ins->acceleration[i] = (double)(ins->raw_data.acc[i] * INS_SCALE_ACC);
 #endif
 #ifdef INS_READ_GYRO
     for (uint8_t i = 0; i < 3; ++i)
@@ -59,7 +59,7 @@ void format_data(struct INS_s* ins)
 #endif
 #ifdef INS_READ_QUAT
     for (uint8_t i = 0; i < 4; ++i)
-        ins->quaternion[i] = (float)ins->raw_data.quat[i] * INS_SCALE_QUAT;
+        ins->quaternion[i] = (double)ins->raw_data.quat[i] * INS_SCALE_QUAT;
 #endif
 }
 
@@ -67,4 +67,81 @@ void format_data(struct INS_s* ins)
 void read_data(struct INS_s* ins)
 {
     read_register(INS_YYMM, (uint8_t*)&ins->raw_data, sizeof(ins->raw_data));
+}
+
+// TESTED: WORKING.
+// Compute quaternions product.
+static inline void quat_prod(double q[], double p[], double r[])
+{
+    r[0] = q[0] * p[0] - q[1] * p[1] - q[2] * p[2] - q[3] * p[3];
+    r[1] = q[0] * p[1] + q[1] * p[0] + q[2] * p[3] - q[3] * p[2];
+    r[2] = q[0] * p[2] + q[2] * p[0] + q[3] * p[1] - q[1] * p[3];
+    r[3] = q[0] * p[3] + q[3] * p[0] + q[1] * p[2] - q[2] * p[1];
+}
+
+// Compute quaternions norm.
+static inline double quat_norm(double q[])
+{
+    return q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3];
+}
+
+// Compute quaternion conjugate.
+static inline void quat_conjugate(double q[], double p[])
+{
+    p[0] = q[0];
+    for (uint8_t i = 1; i < 4; ++i)
+        p[i] = -q[i];
+}
+
+// Compute quaternion inverse.
+static inline void quat_inverse(double q[], double p[])
+{
+    double norm = quat_norm(q);
+    // p is assigned to q conjugate divided by q norm.
+    p[0] = q[0] / norm;
+    for (uint8_t i = 1; i < 4; ++i)
+        p[i] = -q[i] / norm;
+}
+
+// TODO: check formula correctness.
+// TODO: implement acceleration software calibration.
+// TODO: consider checking and correcting unit quaternion norm.
+// Fast formula to subtract gravity.
+// Gravity is assumed to be only on vertical z-axis, hence good angle calibration is determinant.
+static inline void filter_gravity(struct INS_s* ins)
+{
+    double* q = ins->quaternion;
+    double* a = ins->acceleration;
+    // double norm_sq = quat_norm(q); // compute square of the norm
+    // norm_sq *= norm_sq;
+    a[1] -= 2.0 * (q[1] * q[3] - q[0] * q[2]) /* / norm_sq*/;
+    a[2] -= 2.0 * (q[0] * q[1] + q[2] * q[3]) /* / norm_sq*/;
+    a[3] -= - q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3] /* / norm_sq*/;
+}
+
+// Compute velocity and position with trapezoidal rule integration.
+void update_state(struct INS_s* ins)
+{
+    filter_gravity(ins);
+    // Integrate acceleration to compute position.
+    for (uint8_t i = 0; i < 4; ++i) {
+        ins->velocity[i] += ins->acceleration[i] * INS_SAMPLE_RATE * INS_SCALE_VELOCITY;
+        ins->position[i] += ins->velocity[i] * INS_SAMPLE_RATE;
+    }
+}
+
+void slow_gfilter(struct INS_s* ins)
+{
+    const double g[4] = { 0.0, 0.0, 0.0, 1.0 };
+    double q_inverse[4];
+    quat_inverse(ins->quaternion, q_inverse);
+    double q_inverse_conj[4];
+    quat_conjugate(q_inverse, q_inverse_conj);
+    double q_res[4];
+    quat_prod(q_inverse, g, q_res);
+    double q_res1[4];
+    quat_prod(q_res, q_inverse_conj, q_res1);
+
+    for (uint8_t i = 0; i < 4; ++i) // subtract rotated gravity
+        ins->acceleration[i] -= q_res1[i];
 }

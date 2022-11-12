@@ -7,6 +7,10 @@
 #define INS_DEFAULT_ADDR 0x50 // keep default address
 #define INS_MAX_BAUDRATE 400000 // Baudrate in Hz
 #define INS_DEFAULT_BAUDRATE INS_MAX_BAUDRATE
+#define INS_GRAVITY_ACC (9.81)
+
+#define INS_SAMPLE_RATE 0.005 // Max sampling rate in seconds
+
 // Read options for small optimizations. Uncomment to select.
 #define INS_READ_TIME
 #define INS_READ_ACC
@@ -110,6 +114,7 @@
 #define INS_SCALE_GPSY (1.0 / 10.0)
 #define INS_SCALE_GPSV (1.0 / 1000.0)
 #define INS_SCALE_QUAT (1.0 / 32768.0)
+#define INS_SCALE_VELOCITY INS_GRAVITY_ACC // convert g to m/s² when integrating acceleration
 
 struct Time_s {
     uint8_t year;
@@ -136,13 +141,15 @@ struct RawData_s {
     int16_t gps_height;
     int16_t gps_yaw;
     uint32_t gps_velocity;
-    int16_t quat[4];
+    int16_t quat[4]; // order: w (real part) first, x, y, z after
 } __packed; // explicity disable struct padding
 
 struct INS_s {
     struct RawData_s raw_data;
     struct Time_s time;
-    float acceleration[3];
+    double acceleration[3];
+    double velocity[3];
+    double position[3];
     float angular_velocity[3];
     int16_t magnetic_field[3];
     float angle[3];
@@ -155,11 +162,12 @@ struct INS_s {
     float gps_height;
     float gps_yaw;
     float gps_velocity;
-    float quaternion[4];
+    double quaternion[4];
 };
 
 static inline void read_register(uint8_t, uint8_t[], uint8_t);
 void format_data(struct INS_s*);
 void read_data(struct INS_s*);
+void update_state(struct INS_s*); // compute velocity and position
 
 #endif // INS_H
