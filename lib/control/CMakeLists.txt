@@ -1,5 +1,10 @@
 add_library(control control.c control.h)
 
+# Add include paths
+target_include_directories(control
+    PUBLIC ${CMAKE_SOURCE_DIR}/lib/
+)
+
 # pull in common dependencies
 target_link_libraries(control PUBLIC
     pico_stdlib

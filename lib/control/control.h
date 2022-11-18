@@ -3,13 +3,11 @@
 
 #include <stdint.h>
 
-#include <stdint.h>
-
 #define STATE_DIM 4
 
 // TODO: consider implementing derivative average.
 // Derivative interval time units for noise reduction.
-// Set to a power of two smaller than 256 for efficiency.
+// Set to a power of 2 smaller than 256 for efficiency.
 #define DER_FILTER_ETA 4
 
 struct PidController {
@@ -23,20 +21,17 @@ struct System {
     float state[STATE_DIM];
     // State setpoint vector.
     float setpoint[STATE_DIM];
-    // Control vector containing in order lower and upper motor, left and right servo.
+    // Physical control vector containing in order lower and upper motor, left and right servo.
     float control[STATE_DIM];
     // Control lower and upper boundaries.
     const float ctrl_bound[STATE_DIM][2];
     // Pid controllers associated to control vector.
     const struct PidController controllers[STATE_DIM];
-    // State variable weights to compute errors.
-    float err_weights[STATE_DIM][STATE_DIM];
+    // Matrix for the change of basis from PID state controls to physical controls.
+    float ctrl_dependence[STATE_DIM][STATE_DIM];
     // Time counter for derivative filter.
     uint8_t time_cnt;
 };
-
-// State variable weights to compute errors.
-extern float err_weights[STATE_DIM][STATE_DIM];
 
 // Fast scalar product for fixed-size arrays.
 static inline float scalarProduct(const float x[static STATE_DIM], const float y[static STATE_DIM]);
