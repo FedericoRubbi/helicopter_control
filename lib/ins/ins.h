@@ -10,19 +10,20 @@
 #define INS_GRAVITY_ACC (9.81)
 
 #define INS_SAMPLE_RATE 0.005 // Max sampling rate in seconds
+#define INS_PACKET_SIZE (sizeof(struct RawData_s)) // packet size macro for transmission
 
 // Read options for small optimizations. Uncomment to select.
 #define INS_READ_TIME
 #define INS_READ_ACC
 #define INS_READ_GYRO
-//#define INS_READ_MAG
+// #define INS_READ_MAG
 #define INS_READ_ANGLE
-//#define INS_READ_TEMP
-//#define INS_READ_DSTATUS
-//#define INS_READ_PRESS
+// #define INS_READ_TEMP
+// #define INS_READ_DSTATUS
+// #define INS_READ_PRESS
 #define INS_READ_ALTITUDE
-//#define INS_READ_LATLON
-//#define INS_READ_GPS
+// #define INS_READ_LONLAT
+// #define INS_READ_GPS
 #define INS_READ_QUAT
 
 // Command registers address.
@@ -114,8 +115,9 @@
 #define INS_SCALE_GPSY (1.0 / 10.0)
 #define INS_SCALE_GPSV (1.0 / 1000.0)
 #define INS_SCALE_QUAT (1.0 / 32768.0)
-#define INS_SCALE_VELOCITY INS_GRAVITY_ACC // convert g to m/s² when integrating acceleration
+#define INS_SCALE_VELOCITY INS_GRAVITY_ACC // to convert g to m/s² when integrating acceleration
 
+#ifdef INS_READ_TIME
 struct Time_s {
     uint8_t year;
     uint8_t month;
@@ -125,44 +127,91 @@ struct Time_s {
     uint8_t second;
     uint16_t millisecond;
 };
+#endif
 
 struct RawData_s {
+#ifdef INS_READ_TIME
     struct Time_s time;
+#endif
+#ifdef INS_READ_ACC
     int16_t acc[3];
+#endif
+#ifdef INS_READ_GYRO
     int16_t gyro[3];
+#endif
+#ifdef INS_READ_MAG
     int16_t mag[3];
+#endif
+#ifdef INS_READ_ANGLE
     int16_t angle[3];
+#endif
+#ifdef INS_READ_TEMP
     int16_t temperature;
+#endif
+#ifdef INS_READ_DSTATUS
     int16_t dstatus[4];
+#endif
+#ifdef INS_READ_PRESS
     uint32_t pressure;
+#endif
+#ifdef INS_READ_ALTITUDE
     int32_t altitude;
+#endif
+#ifdef INS_READ_LONLAT
     int32_t longitude;
     int32_t latitude;
+#endif
+#ifdef INS_READ_GPS
     int16_t gps_height;
     int16_t gps_yaw;
     uint32_t gps_velocity;
-    int16_t quat[4]; // order: w (real part) first, x, y, z after
+#endif
+#ifdef INS_READ_QUAT
+    int16_t quat[4]; // real part first, imaginary part after
+#endif
 } __packed; // explicity disable struct padding
 
 struct INS_s {
     struct RawData_s raw_data;
+#ifdef INS_READ_TIME
     struct Time_s time;
-    double acceleration[3];
-    double velocity[3];
-    double position[3];
+#endif
+#ifdef INS_READ_ACC
+    float acceleration[3];
+#endif
+#ifdef INS_READ_GYRO
     float angular_velocity[3];
+#endif
+#ifdef INS_READ_MAG
     int16_t magnetic_field[3];
+#endif
+#ifdef INS_READ_ANGLE
     float angle[3];
+#endif
+#ifdef INS_READ_TEMP
     float temperature;
+#endif
+#ifdef INS_READ_DSTATUS
     int16_t dstatus[4];
+#endif
+#ifdef INS_READ_PRESS
     uint32_t pressure;
+#endif
+#ifdef INS_READ_ALTITUDE
     float altitude;
+#endif
+#ifdef INS_READ_LONLAT
     int32_t longitude;
     int32_t latitude;
+#endif
+#ifdef INS_READ_GPS
     float gps_height;
     float gps_yaw;
     float gps_velocity;
-    double quaternion[4];
+#endif
+#ifdef INS_READ_QUAT
+    float quaternion[4];
+#endif
 };
 
 static inline void read_register(uint8_t, uint8_t[], uint8_t);
