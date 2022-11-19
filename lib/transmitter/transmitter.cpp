@@ -7,18 +7,15 @@
 // instantiate an object for the nRF24L01 transceiver
 RF24 radio(CE_PIN, CSN_PIN); // move to main.cpp
 
-struct Payload_s
-{
-    uint8_t dummy; // to be changed
-} payload;
+struct TxPayload_s payload_buf[PAYLOAD_BUFFER_SIZE]; // payload buffer to store a packet
 
-void reset_bootloader()
+void resetBootloader()
 {
     radio.powerDown();
     reset_usb_boot(0, 0);
 }
 
-bool setup_radio()
+bool setupRadio()
 {
     // wait here until the CDC ACM (serial port emulation) is connected
     while (!tud_cdc_connected())
@@ -33,8 +30,15 @@ bool setup_radio()
         return false;
     }
 
-    radio.setPALevel(RF24_PA_LOW); // RF24_PA_MAX is default.
-    radio.setPayloadSize(sizeof(payload));
+    radio.setPALevel(RF24_PA_LOW); // RF24_PA_MAX is default
+
+    // radio.setPayloadSize(sizeof(payload)); // static payload size
+
+    // Enable dinamic payload and ack payload.
+    radio.enableDynamicPayloads(); // ACK payloads are dynamically sized
+    // Acknowledgement packets have no payloads by default. We need to enable
+    // this feature for all nodes (TX & RX) to use ACK payloads.
+    radio.enableAckPayload();
 
     radio.openWritingPipe(tx_pipe_addr);
     radio.openReadingPipe(1, rx_pipe_addr);
@@ -47,15 +51,44 @@ bool setup_radio()
     return true;
 }
 
-void send_data()
+void sendPacket()
 {
-    bool report = radio.write(&payload, sizeof(payload)); // transmit & save the report
-
-    if (!report)
+    for(uint8_t i = 0; i < PAYLOAD_BUFFER_SIZE; ++i){
+        bool report = radio.write(&payload_buf[i], PAYLOAD_SIZE);
+        if (!report)
         printf("Transmission failed or timed out\n");
+    }
 }
 
-void wait_radio()
+void waitRadio()
 {
-    while (!setup_radio()); // move to main.cpp
+    while (!setupRadio())
+        ; // move to main.cpp
+}
+
+void readAck(struct RxAckPayload_s *ack_payload)
+{
+    if (radio.available())
+    { // is there an ACK payload? grab the pipe number that received it
+        radio.read(ack_payload, sizeof(*ack_payload));
+    }
+
+}
+
+// Mirror received payload to RX to ensure data correctness.
+void cmdFeedback(struct RxAckPayload_s *ack_payload)
+{
+    uint8_t cmd = ack_payload->cmd_code;
+    if(cmd >= SET_PID0 && cmd <= SET_DMAT2)
+        radio.write(ack_payload->data, sizeof(*ack_payload));
+}
+
+void splitPacket(struct Packet_s *packet)
+{
+    for(uint8_t i = 0; i < PAYLOAD_BUFFER_SIZE; ++i){
+        memcpy(payload_buf[i].data, packet->sensor_data + i * PAYLOAD_DATA_SIZE, PAYLOAD_DATA_SIZE);
+        payload_buf[i].eop = UNSET_EOP;
+    }
+    
+    payload_buf[PAYLOAD_BUFFER_SIZE -1].eop = SET_EOP;
 }
