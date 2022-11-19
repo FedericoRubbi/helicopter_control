@@ -1,6 +1,6 @@
-#include <iostream>
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
+#include <iostream>
 #include <transmitter/transmitter.h>
 
 extern "C" {
@@ -29,6 +29,7 @@ void test_INS()
         read_data(&INS); // update sensor data
         uint64_t end_timer = to_us_since_boot(get_absolute_time()); // end timer
         format_data(&INS); // format raw data
+        update_state(&INS);
         std::cout << "Data read and format time: " << end_timer - start_timer << " us" << std::endl;
         std::cout << "\t time: " << unsigned(INS.time.year) << "/" << unsigned(INS.time.month)
                   << "/" << unsigned(INS.time.day) << ":" << unsigned(INS.time.second) << "."
@@ -36,15 +37,14 @@ void test_INS()
 
         std::cout << "\t acceleration: " << INS.acceleration[0] << "\t" << INS.acceleration[1]
                   << "\t" << INS.acceleration[2] << std::endl;
+        std::cout << "\t angle: " << INS.angle[0] << "\t" << INS.angle[1] << "\t" << INS.angle[2]
+                  << std::endl;
         std::cout << "\t angular velocity: " << INS.angular_velocity[0] << "\t"
                   << INS.angular_velocity[1] << "\t" << INS.angular_velocity[2] << std::endl;
         std::cout << "\t magnetic field: " << INS.magnetic_field[0] << "\t" << INS.magnetic_field[1]
                   << "\t" << INS.magnetic_field[2] << std::endl;
-        std::cout << "\t angle: " << INS.angle[0] << "\t" << INS.angle[1] << "\t" << INS.angle[2]
-                  << std::endl;
 
         std::cout << "\t temperature: " << INS.temperature << std::endl;
-
         std::cout << "\t pin input: " << INS.dstatus[0] << "\t" << INS.dstatus[1] << "\t"
                   << INS.dstatus[2] << "\t" << INS.dstatus[3] << std::endl;
 
@@ -60,7 +60,6 @@ void test_INS()
 
         std::cout << "\t quaternions: " << INS.quaternion[0] << "\t" << INS.quaternion[1] << "\t"
                   << INS.quaternion[2] << "\t" << INS.quaternion[3] << std::endl;
-
         std::cout << "___________________________________________________________\n\n" << std::endl;
         sleep_ms(500);
     }
