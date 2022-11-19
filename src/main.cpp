@@ -5,6 +5,7 @@
 
 extern "C" {
 #include "ins/ins.h"
+#include "control/control.h"
 }
 
 // Initialize Inertial navigation system.
