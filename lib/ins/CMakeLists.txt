@@ -1,4 +1,4 @@
-add_library(ins ins.c ins.h)
+add_library(ins ins.c ins.h imu.c imu.h us_sensor.c us_sensor.h)
 
 # pull in common dependencies
 target_link_libraries(ins PUBLIC
