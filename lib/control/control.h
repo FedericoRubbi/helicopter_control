@@ -14,7 +14,7 @@ struct PidController {
     const float k_p; // proportional coefficient
     const float k_i; // integral coefficient
     const float k_d; // derivative coefficient
-} PidController;
+};
 
 struct System {
     // State vector containing in order x, y, z coordinates and yaw.
@@ -34,8 +34,8 @@ struct System {
 };
 
 // Fast scalar product for fixed-size arrays.
-static inline float scalarProduct(const float x[static STATE_DIM], const float y[static STATE_DIM]);
-static inline float setBounds(float x, const float bound[static 2]);
+static inline float scalarProduct(const float x[STATE_DIM], const float y[STATE_DIM]);
+static inline float setBounds(float x, const float bound[2]);
 void updateControl();
 
 #endif // CTRL_H

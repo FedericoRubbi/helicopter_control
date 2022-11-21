@@ -1,47 +1,35 @@
 #include "hardware/i2c.h"
 
 #include "us_sensor.h"
-#include <stdio.h>
 
-#ifdef US_SET_KALMAN
-struct USKalman_s kf = {
-    .A = 1,
-    .B = 0,
-    .C = 1,
-    .u = 0,
-    .R = 0.008f,
-    .Q = 0.084535f,
-};
-#endif
+#include "pico/stdlib.h"
+#include <stdio.h>
 
 static inline int abs(int x) { return x >= 0 ? x : -x; }
 
 #ifdef US_SET_KALMAN
-// Apply Kalman filter to range measure.
+// Apply fast Kalman filter to range measure.
 float kalman_filter(float range)
 {
+    const float R = US_KALMAN_R;
+    const float Q = US_KALMAN_Q;
     static int prev_range[2]; // save previous ranges to compute derivative
-    static float prev_mu;
-    static float prev_sigma;
+    static float mu;
+    static float sigma = US_KALMAN_R;
 
     // Check gradient.
     if (abs(prev_range[0] - range) <= US_MAX_GRADIENT
         || abs(prev_range[0] - prev_range[1]) > US_MAX_GRADIENT) {
-        float mu_bar = kf.A * prev_mu;
-        float sigma_bar = kf.A * prev_sigma * kf.A + kf.R;
-        float K = sigma_bar * kf.C / (kf.C * sigma_bar * kf.C + kf.Q);
-        float mu = mu_bar + K * (range - kf.C * mu_bar);
-        float sigma = (1 - K * kf.C) * sigma_bar;
-
-        prev_mu = mu;
-        prev_sigma = sigma;
+        mu += sigma / (sigma + Q) * (range - mu);
+        sigma = sigma * Q / (sigma + Q) + R;
     }
     prev_range[1] = prev_range[0]; // update ranges
     prev_range[0] = range;
 
-    return prev_mu; // corrected distance
+    return mu; // corrected distance
 }
 #endif
+
 
 // TODO: change waiting system for variable frequency reading.
 float read_range()

@@ -163,7 +163,7 @@ struct RawData_s {
 #ifdef IMU_READ_QUAT
     int16_t quat[4]; // real part first, imaginary part after
 #endif
-} __packed; // explicity disable struct padding
+} __attribute__((packed)); // explicity disable struct padding as required from imu_read_all
 
 struct IMU_s {
     struct RawData_s raw_data;

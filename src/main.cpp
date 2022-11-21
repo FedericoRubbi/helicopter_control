@@ -6,6 +6,7 @@
 extern "C" {
 #include "ins/ins.h"
 #include "control/control.h"
+#include "ins/us_sensor.h"
 }
 
 // Initialize Inertial navigation system.
@@ -24,7 +25,7 @@ void setup_i2c()
 void test_INS()
 {
     while (true) {
-        //printf("US sensor range: %f\n", read_range());
+        printf("US sensor range: %f\n", read_range());
         std::cout << "INERTIAL NAVIGATION SYSTEM DATA" << std::endl;
         uint64_t start_timer = to_us_since_boot(get_absolute_time()); // start timer
         read_imu_data(&ins.imu); // update sensor data

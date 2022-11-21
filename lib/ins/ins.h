@@ -11,6 +11,7 @@
 #define INS_GRAVITY_ACC (9.81)
 
 #define INS_PACKET_SIZE (sizeof(struct RawData_s)) // packet size macro for transmission
+#define INS_SAMPLE_TIME IMU_SAMPLE_TIME
 
 #define INS_SCALE_VELOCITY INS_GRAVITY_ACC // to convert g to m/s² when integrating acceleration
 

@@ -59,7 +59,7 @@ void updateControl(struct System* sys)
         err_integral[i] = setBounds(err_integral[i] + error[i], sys->ctrl_bound[i]);
 
         state_control[i] = setBounds(sys->controllers[i].k_p * error[i] // update control
-                + sys->controllers[i].k_i * err_integral[i] * INS_SAMPLE_RATE
+                + sys->controllers[i].k_i * err_integral[i] * INS_SAMPLE_TIME
                 + sys->controllers[i].k_d * (error[i] - prev_err[i]),
             sys->ctrl_bound[i]);
     }

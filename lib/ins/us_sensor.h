@@ -14,15 +14,9 @@
 #define US_MAX_SAMPLE_TIME 0.067
 #define US_SCALE_RANGE (1.0 / 100.0) // convert range measure to meters
 
-#ifdef US_SET_KALMAN
-struct USKalman_s {
-    int A;
-    int B;
-    int C;
-    int u;
-    const float R;
-    const float Q;
-};
+#ifdef US_SET_KALMAN // Kalman filter coefficients
+#define US_KALMAN_R 0.008f
+#define US_KALMAN_Q 0.084535f
 #endif
 
 float read_range();

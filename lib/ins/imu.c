@@ -65,7 +65,7 @@ void format_imu_data(struct IMU_s* imu)
 #endif
 }
 
-// Read all data from IMU. All read macros must be enabled to use.
+// Read all data from IMU. All read macros must be enabled and RawData_s must be packed to use.
 // The function is almost 2 times faster than read_imu_data when all read flags are set.
 void read_imu_all(struct IMU_s* imu) {
     read_register(IMU_YYMM, (uint8_t*)&imu->raw_data, sizeof(imu->raw_data));

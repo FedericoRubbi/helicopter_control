@@ -39,13 +39,13 @@ struct TxPayload_s
 {
     uint8_t data[PAYLOAD_DATA_SIZE];
     uint8_t eop; // end of packet flag
-} __packed;
+} __attribute__((packed));
 
 struct RxAckPayload_s
 {
     uint8_t data[PAYLOAD_DATA_SIZE];
     uint8_t cmd_code; // command code
-} __packed;
+} __attribute__((packed));
 
 void resetBootloader();
 bool setupRadio();
