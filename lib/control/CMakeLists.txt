@@ -1,4 +1,4 @@
-add_library(control control.c control.h)
+add_library(control control.c control.h actuator.c actuator.h)
 
 # Add include paths
 target_include_directories(control
@@ -8,6 +8,7 @@ target_include_directories(control
 # pull in common dependencies
 target_link_libraries(control PUBLIC
     pico_stdlib
+    hardware_pwm
 )
 
 # Stdio output is sent to USB for debugging instead of UART.

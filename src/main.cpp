@@ -4,13 +4,17 @@
 #include <transmitter/transmitter.h>
 
 extern "C" {
-#include "ins/ins.h"
+#include "control/actuator.h" // to be moved to control.h
 #include "control/control.h"
-#include "ins/us_sensor.h"
+#include "ins/ins.h"
+#include "ins/us_sensor.h" // to be moved to ins.h
 }
 
 // Initialize Inertial navigation system.
 struct INS_s ins;
+
+// Initialize upper and lower servos.
+struct Actuator_s servo[2];
 
 void setup_i2c()
 {
@@ -25,7 +29,7 @@ void setup_i2c()
 void test_INS()
 {
     while (true) {
-        printf("US sensor range: %f\n", read_range());
+        std::cout << "US sensor range:" << read_range() << std::endl;
         std::cout << "INERTIAL NAVIGATION SYSTEM DATA" << std::endl;
         uint64_t start_timer = to_us_since_boot(get_absolute_time()); // start timer
         read_imu_data(&ins.imu); // update sensor data
@@ -66,10 +70,22 @@ void test_INS()
     }
 }
 
+void test_servos()
+{
+    init_servo(&servo[0], ACT_RS_PIN);
+    init_servo(&servo[1], ACT_LS_PIN);
+
+    for (float duty_ms = 0;; /*duty_ms += 0.1f*/) {
+        std::cout << "Duty s0 (ms): " << std::endl;
+        std::cin >> duty_ms;
+        set_millis(&servo[0], duty_ms);
+    }
+}
+
 int main()
 {
     stdio_init_all();
     setup_i2c();
-    test_INS();
-    //test_US();
+    // test_INS();
+    test_servos();
 }
