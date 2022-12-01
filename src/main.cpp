@@ -16,6 +16,7 @@ struct INS_s ins;
 
 // Initialize right and left servos.
 struct Actuator_s servo[2];
+struct Actuator_s motor[2];
 
 void setup_i2c()
 {
@@ -73,8 +74,8 @@ void test_INS()
 
 void test_servos()
 {
-    init_servo(&servo[0], ACT_RS_PIN);
-    init_servo(&servo[1], ACT_LS_PIN);
+    init_actuator(&servo[0], ACT_RS_PIN);
+    init_actuator(&servo[1], ACT_LS_PIN);
 
     for (float angle = 0;; angle += 0.005) {
         float s0 = sin(angle) * 0.3f + 1.1f;
@@ -87,10 +88,34 @@ void test_servos()
     }
 }
 
+void test_motor_drivers()
+{
+    init_actuator(&motor[0], ACT_LM_PIN);
+    init_actuator(&motor[1], ACT_UM_PIN);
+    motor[0].duty = 0.0f;
+    motor[1].duty = 0.0f;
+    update_motors(&motor[0], &motor[1]);
+    sleep_ms(100);
+    motor[0].duty = 1.5f;
+    motor[1].duty = 1.5f;
+    update_motors(&motor[0], &motor[1]);
+
+    for (;;) {
+        std::cout << "Enter lower motor duty in ms: ";
+        std::cin >> motor[0].duty;
+        std::cout << "Enter upper motor duty in ms: ";
+        std::cin >> motor[1].duty;
+        update_motors(&motor[0], &motor[1]);
+        std::cout << "M0: " << motor[0].duty << " "
+                  << "\tM1: " << motor[1].duty << std::endl;
+    }
+}
+
 int main()
 {
     stdio_init_all();
     setup_i2c();
     // test_INS();
-    test_servos();
+    // test_servos();
+    test_motor_drivers();
 }
