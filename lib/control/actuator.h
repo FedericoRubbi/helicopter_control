@@ -16,25 +16,26 @@
 #define ACT_S_DIV 64.0f
 #define ACT_S_WRAP (clock_get_hz(clk_sys) / ACT_S_DIV / ACT_S_FREQ)
 
-// TODO: power servos from BEC and check bound values.
-// Tuned signal bounds.
-#define ACT_RS_START_MS 0
-#define ACT_RS_MIN_MS 0.6f // min duty cycle in ms for left servo (downwards)
-#define ACT_RS_MAX_MS 1.5f // max duty cycle in ms for left servo (upwards)
-#define ACT_LS_START_MS 0
-#define ACT_LS_MIN_MS 1.0f // min duty cycle in ms for right servo (upwards)
-#define ACT_LS_MAX_MS 1.9f // max duty cycle in ms for right servo (downwards)
+// Tuned signal bounds for duty cycles.
+#define ACT_S_SPAN 0.45f // servo signal span in ms from midpoint
+#define ACT_S_RADIUS (ACT_S_SPAN / 2.0f)
+#define ACT_RS_MIDPOINT 1.1f // right servo midpoint
+#define ACT_LS_MIDPOINT 1.45f // left servo midpoint
+#define ACT_RS_MIN_MS (ACT_RS_MIDPOINT - ACT_S_SPAN / 2.0f) // right servo min duty cycle (downwards)
+#define ACT_RS_MAX_MS (ACT_RS_MIDPOINT + ACT_S_SPAN / 2.0f) // right servo max duty cycle (upwards)
+#define ACT_LS_MIN_MS (ACT_LS_MIDPOINT - ACT_S_SPAN / 2.0f) // left servo min duty cycle (upwards)
+#define ACT_LS_MAX_MS (ACT_LS_MIDPOINT + ACT_S_SPAN / 2.0f) // left servo max duty cycle (downwards)
+#define ACT_RS_START_MS ACT_RS_MIDPOINT
+#define ACT_LS_START_MS ACT_LS_MIDPOINT
 
 struct Actuator_s {
     uint8_t pin;
     uint slice;
     pwm_config config;
-    uint16_t duty; // duty period in ms
+    float duty; // duty period in ms
 };
 
 void init_servo(struct Actuator_s* servo, uint8_t pin);
-void set_millis(struct Actuator_s* servo, float millis);
-void set_right_servo(struct Actuator_s* r_servo);
-void set_left_servo(struct Actuator_s* l_servo);
+void update_servos(struct Actuator_s* r_servo, struct Actuator_s* l_servo);
 
 #endif // ACTUATOR_H

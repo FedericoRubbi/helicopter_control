@@ -8,5 +8,5 @@ else
 fi
 # Open serial
 echo "Opening serial..."
-sleep 3
+sleep 1
 minicom -b 9600 -o -D /dev/ttyACM0

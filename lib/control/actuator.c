@@ -2,19 +2,10 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 #include "pico/time.h"
+#include <math.h>
 #include <stdio.h>
 
 #include "actuator.h"
-
-// Initialize upper and lower servos.
-// struct Actuator_s servo[2];
-
-// Set bounds for servos signal.
-// Set variable in specified lower and upper bound.
-static inline float set_bounds(const float x, const float l_b, const float u_b)
-{
-    return x < l_b ? l_b : (x > u_b ? u_b : x);
-}
 
 // Initialize servo data and configurations.
 void init_servo(struct Actuator_s* servo, uint8_t pin)
@@ -29,21 +20,27 @@ void init_servo(struct Actuator_s* servo, uint8_t pin)
     pwm_init(servo->slice, &servo->config, true);
 }
 
-// Set duty cycle in milliseconds.
-void set_millis(struct Actuator_s* servo, float millis)
+// Set duty cycle level.
+static inline void set_duty(struct Actuator_s* servo)
 {
-    pwm_set_gpio_level(servo->pin, (millis / ACT_S_PERIOD_MS) * ACT_S_WRAP);
+    pwm_set_gpio_level(servo->pin, (servo->duty / ACT_S_PERIOD_MS) * ACT_S_WRAP);
 }
 
-// Set duty cycle for right servo.
-void set_right_servo(struct Actuator_s* r_servo)
+// Set servos signals bounds.
+static inline void set_servo_bound(struct Actuator_s* r_servo, struct Actuator_s* l_servo)
 {
-    set_millis(r_servo, set_bounds(r_servo->duty, ACT_RS_MIN_MS, ACT_RS_MAX_MS));
+    float radius = hypot(r_servo->duty - ACT_RS_MIDPOINT, l_servo->duty - ACT_LS_MIDPOINT);
+    if (radius > ACT_S_RADIUS) { // set max radius and convert to cartesian coordinates
+        float angle = atan2(r_servo->duty - ACT_RS_MIDPOINT, l_servo->duty - ACT_LS_MIDPOINT);
+        r_servo->duty = sin(angle) * ACT_S_RADIUS + ACT_RS_MIDPOINT;
+        l_servo->duty = cos(angle) * ACT_S_RADIUS + ACT_LS_MIDPOINT;
+    }
 }
 
-// Set duty cycle for left servo.
-void set_left_servo(struct Actuator_s* l_servo)
+// Update servos signals.
+void update_servos(struct Actuator_s* r_servo, struct Actuator_s* l_servo)
 {
-    set_millis(l_servo, set_bounds(l_servo->duty, ACT_LS_MIN_MS, ACT_LS_MAX_MS));
+    set_servo_bound(r_servo, l_servo);
+    set_duty(r_servo);
+    set_duty(l_servo);
 }
-

@@ -1,6 +1,7 @@
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 #include <iostream>
+#include <math.h>
 #include <transmitter/transmitter.h>
 
 extern "C" {
@@ -10,10 +11,10 @@ extern "C" {
 #include "ins/us_sensor.h" // to be moved to ins.h
 }
 
-// Initialize Inertial navigation system.
+// Initialize inertial navigation system.
 struct INS_s ins;
 
-// Initialize upper and lower servos.
+// Initialize right and left servos.
 struct Actuator_s servo[2];
 
 void setup_i2c()
@@ -75,10 +76,14 @@ void test_servos()
     init_servo(&servo[0], ACT_RS_PIN);
     init_servo(&servo[1], ACT_LS_PIN);
 
-    for (float duty_ms = 0;; /*duty_ms += 0.1f*/) {
-        std::cout << "Duty s0 (ms): " << std::endl;
-        std::cin >> duty_ms;
-        set_millis(&servo[0], duty_ms);
+    for (float angle = 0;; angle += 0.005) {
+        float s0 = sin(angle) * 0.3f + 1.1f;
+        float s1 = cos(angle) * 0.3f + 1.45f;
+        servo[0].duty = s0;
+        servo[1].duty = s1;
+        update_servos(&servo[0], &servo[1]);
+        std::cout << "\tduty s0 (ms): " << s0 << " " << servo[0].duty << "\tduty s1 (ms): " << s1
+                  << " " << servo[1].duty << std::endl;
     }
 }
 
