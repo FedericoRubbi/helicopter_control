@@ -1,16 +1,22 @@
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 #include <iostream>
+#include <math.h>
 #include <transmitter/transmitter.h>
 
 extern "C" {
-#include "ins/ins.h"
+#include "control/actuator.h" // to be moved to control.h
 #include "control/control.h"
-#include "ins/us_sensor.h"
+#include "ins/ins.h"
+#include "ins/us_sensor.h" // to be moved to ins.h
 }
 
-// Initialize Inertial navigation system.
+// Initialize inertial navigation system.
 struct INS_s ins;
+
+// Initialize right and left servos.
+struct Actuator_s servo[2];
+struct Actuator_s motor[2];
 
 void setup_i2c()
 {
@@ -25,7 +31,7 @@ void setup_i2c()
 void test_INS()
 {
     while (true) {
-        printf("US sensor range: %f\n", read_range());
+        std::cout << "US sensor range:" << read_range() << std::endl;
         std::cout << "INERTIAL NAVIGATION SYSTEM DATA" << std::endl;
         uint64_t start_timer = to_us_since_boot(get_absolute_time()); // start timer
         read_imu_data(&ins.imu); // update sensor data
@@ -66,10 +72,50 @@ void test_INS()
     }
 }
 
+void test_servos()
+{
+    init_actuator(&servo[0], ACT_RS_PIN);
+    init_actuator(&servo[1], ACT_LS_PIN);
+
+    for (float angle = 0;; angle += 0.005) {
+        float s0 = sin(angle) * 0.3f + 1.1f;
+        float s1 = cos(angle) * 0.3f + 1.45f;
+        servo[0].duty = s0;
+        servo[1].duty = s1;
+        update_servos(&servo[0], &servo[1]);
+        std::cout << "\tduty s0 (ms): " << s0 << " " << servo[0].duty << "\tduty s1 (ms): " << s1
+                  << " " << servo[1].duty << std::endl;
+    }
+}
+
+void test_motor_drivers()
+{
+    init_actuator(&motor[0], ACT_LM_PIN);
+    init_actuator(&motor[1], ACT_UM_PIN);
+    motor[0].duty = 0.0f;
+    motor[1].duty = 0.0f;
+    update_motors(&motor[0], &motor[1]);
+    sleep_ms(100);
+    motor[0].duty = 1.5f;
+    motor[1].duty = 1.5f;
+    update_motors(&motor[0], &motor[1]);
+
+    for (;;) {
+        std::cout << "Enter lower motor duty in ms: ";
+        std::cin >> motor[0].duty;
+        std::cout << "Enter upper motor duty in ms: ";
+        std::cin >> motor[1].duty;
+        update_motors(&motor[0], &motor[1]);
+        std::cout << "M0: " << motor[0].duty << " "
+                  << "\tM1: " << motor[1].duty << std::endl;
+    }
+}
+
 int main()
 {
     stdio_init_all();
     setup_i2c();
-    test_INS();
-    //test_US();
+    // test_INS();
+    // test_servos();
+    test_motor_drivers();
 }
