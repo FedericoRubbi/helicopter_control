@@ -5,7 +5,7 @@
 
 // IMU configurations.
 #define IMU_DEFAULT_ADDR 0x50 // keep default address
-#define IMU_SAMPLE_TIME 0.005 // Minimum sampling time in seconds
+#define IMU_SAMPLE_TIME 0.005 // minimum sampling time in seconds
 
 // Read options for small optimizations. Uncomment to select.
 #define IMU_READ_TIME
