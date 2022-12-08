@@ -9,10 +9,10 @@ target_include_directories(main
 # pull in common dependencies
 target_link_libraries(main PUBLIC
     pico_stdlib
-    hardware_gpio
-    hardware_i2c
+    pico_multicore
     ins
     control
+    transmitter
 )
 
 # Stdio output is sent to USB for debugging instead of UART.
