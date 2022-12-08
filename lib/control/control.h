@@ -2,40 +2,49 @@
 #define CTRL_H
 
 #include <stdint.h>
+#include "actuator.h"
+#include "ins/ins.h"
 
-#define STATE_DIM 4
+#define CTRL_STATE_DIM 4 // state and control vectors dimension
+#define CTRL_PID_FREQ ACT_S_FREQ
 
 // TODO: consider implementing derivative average.
 // Derivative interval time units for noise reduction.
 // Set to a power of 2 smaller than 256 for efficiency.
-#define DER_FILTER_ETA 4
+#define CTRL_DER_FILTER_ETA 4
 
-struct PidController {
-    const float k_p; // proportional coefficient
-    const float k_i; // integral coefficient
-    const float k_d; // derivative coefficient
-};
+struct PidController
+{
+    float k_p; // proportional coefficient
+    float k_i; // integral coefficient
+    float k_d; // derivative coefficient
+} __attribute__((packed));
 
-struct System {
-    // State vector containing in order x, y, z coordinates and yaw.
-    float state[STATE_DIM];
+struct System
+{
+    // State vector containing acceleration on x, y axes, z coordinate (height) and yaw.
+    float state[CTRL_STATE_DIM];
     // State setpoint vector.
-    float setpoint[STATE_DIM];
-    // Physical control vector containing in order lower and upper motor, left and right servo.
-    float control[STATE_DIM];
+    float setpoint[CTRL_STATE_DIM];
+
+    // Physical control vector containing servos and motor drivers duty cycles in ms.
+    float control[CTRL_STATE_DIM];
     // Control lower and upper boundaries.
-    const float ctrl_bound[STATE_DIM][2];
+    const float ctrl_bound[CTRL_STATE_DIM][2];
+    // Physical control actuators containing in order right and left servo, lower and upper motor.
+    struct Actuator_s actuator[CTRL_STATE_DIM];
+
     // Pid controllers associated to control vector.
-    const struct PidController controllers[STATE_DIM];
-    // Matrix for the change of basis from PID state controls to physical controls.
-    float ctrl_dependence[STATE_DIM][STATE_DIM];
+    struct PidController controllers[CTRL_STATE_DIM];
+    // Matrix for the change of bases from state-related PID controls to physical controls.
+    float ctrl_dependence[CTRL_STATE_DIM][CTRL_STATE_DIM];
     // Time counter for derivative filter.
     uint8_t time_cnt;
 };
 
-// Fast scalar product for fixed-size arrays.
-static inline float scalarProduct(const float x[STATE_DIM], const float y[STATE_DIM]);
-static inline float setBounds(float x, const float bound[2]);
-void updateControl();
+void setup_control(struct System *sys);
+void compute_control(struct System *sys);
+void update_control(struct System *sys, struct INS_s *ins);
+void stop(struct System *sys);
 
 #endif // CTRL_H
