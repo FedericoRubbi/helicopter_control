@@ -36,7 +36,7 @@ void read_range(float *range)
     static uint8_t buf[2];
     const uint8_t cmd = US_RANGE;
     i2c_write_blocking(i2c1, US_DEFAULT_ADDR, &cmd, 1, false);
-    i2c_read_blocking(i2c1, US_DEFAULT_ADDR, (uint8_t *)buf, sizeof(buf), false);
+    i2c_read_blocking(i2c1, US_DEFAULT_ADDR, buf, sizeof(buf), false);
     *range = (float)(buf[0] << 8 | buf[1]); // invert endianness
 #ifdef US_SET_KALMAN
     kalman_filter(range);

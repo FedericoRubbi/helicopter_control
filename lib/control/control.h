@@ -11,7 +11,7 @@
 // TODO: consider implementing derivative average.
 // Derivative interval time units for noise reduction.
 // Set to a power of 2 smaller than 256 for efficiency.
-#define CTRL_DER_FILTER_ETA 4
+#define CTRL_DER_FILTER_ETA 2
 
 struct PidController
 {
@@ -43,8 +43,9 @@ struct System
 };
 
 void setup_control(struct System *sys);
+void stop(struct System *sys);
+void takeoff(struct System *sys);
 void compute_control(struct System *sys);
 void update_control(struct System *sys, struct INS_s *ins);
-void stop(struct System *sys);
 
 #endif // CTRL_H

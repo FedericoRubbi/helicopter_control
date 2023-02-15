@@ -9,6 +9,7 @@ target_include_directories(control
 target_link_libraries(control PUBLIC
     pico_stdlib
     hardware_pwm
+    hardware_clocks
 )
 
 # Stdio output is sent to USB for debugging instead of UART.

@@ -29,13 +29,28 @@ void setup_control(struct System *sys)
     setup_motors(&sys->actuator[2], &sys->actuator[3]); // setup lower and upper motors
 }
 
+// Stop procedure.
+void stop(struct System *sys)
+{
+    sys->actuator[2].duty = sys->actuator[3].duty = ACT_M_MIN_MS;
+    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
+}
+
+// Power motors at minimum power to take off.
+void takeoff(struct System *sys)
+{
+    sys->actuator[2].duty = ACT_M_TAKEOFF_MS;
+    sys->actuator[3].duty = ACT_M_TAKEOFF_MS;
+    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
+}
+
 // Get state from ins.
 static void get_state(struct System *sys, struct INS_s *ins)
 {
-    sys->state[0] = ins->imu.acceleration[0]; // acceleration on x axis
-    sys->state[1] = ins->imu.acceleration[1]; // acceleration on y axis
-    sys->state[2] = ins->position[3];         // height
-    sys->state[3] = ins->imu.angle[3];        // yaw angle
+    sys->state[0] = (float)ins->imu.acceleration[0]; // acceleration on x axis
+    sys->state[1] = (float)ins->imu.acceleration[1]; // acceleration on y axis
+    sys->state[2] = (float)ins->position[2];         // height
+    sys->state[3] = ins->imu.angle[2];               // yaw angle
 }
 
 // PID algorithm implementation.
@@ -67,6 +82,7 @@ void compute_control(struct System *sys)
             prev_err[i] = error[i];
 };
 
+// PID control procedure.
 void update_control(struct System *sys, struct INS_s *ins)
 {
     get_state(sys, ins);                         // copy state vector
@@ -75,12 +91,5 @@ void update_control(struct System *sys, struct INS_s *ins)
         sys->actuator[i].duty = sys->control[i];
 
     update_servos(&sys->actuator[0], &sys->actuator[1]); // update right and left servos
-    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
-}
-
-// Stop procedure.
-void stop(struct System *sys)
-{
-    sys->actuator[2].duty = sys->actuator[3].duty = ACT_M_MIN_MS;
     update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
 }

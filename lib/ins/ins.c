@@ -9,7 +9,7 @@
 static inline float abs(float x) { return x >= 0 ? x : -x; }
 
 // Compute time interval in seconds.
-static inline float delta(uint16_t ms0, uint16_t ms1) { return 0.001 * (float)(ms1 - ms0); }
+static inline float delta(uint16_t ms0, uint16_t ms1) { return 0.001f * (float)(ms1 - ms0); }
 
 // Setup i2c communication on specified pins.
 void setup_ins(struct INS_s *ins)
