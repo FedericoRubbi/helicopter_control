@@ -6,12 +6,12 @@ The major part of the source code is platform-dependent and hardware specific bu
  - **Waveshare Pico Zero**, based on Raspberry Pi microcontroller RP2040, which is highly compatible with Raspberry Pi Pico
  - **RF-Nano**, an integration the official Arduino Nano board with the nRF24L01+ chip for radio transmission
  
-Below is the list of the hardware components used in the project.
+Below is the list of the hardware components used in the project. Circuit schematics can be found [here](https://github.com/FedericoRubbi/helicopter_control/blob/master/wirings/circuit.png).
 
 ## Hardware components
 | Function | Component name |
 |--|--|
-| Helicopter controller | Waveshare pico-zero |
+| Helicopter controller | Waveshare Pico Zero |
 | Accelerometer | WT901B |
 | Ultrasonic sensor | GY-US42 |
 | RF module | NRF24L01+ |
@@ -36,7 +36,7 @@ Run the following commands to setup the dependecies:
     $ sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
     $ sudo apt install libstdc++-arm-none-eabi-newlib			# only for Debian and Ubuntu
     
-## Note
+**Note**
 Make sure to add compile option `-DPICO_BOARD=waveshare_rp2040_zero` to select the right board configuration.
 If using Microsoft Visual Code editor add `"cmake.configureArgs": ["-DPICO_BOARD=waveshare_rp2040_zero",]`  to the project file *.vscode/settings.json* by opening the command palette (CTRL+SHIFT+P) and selecting "*Preferences: Open Workspace Settings (JSON)*", then install CMake extension and  select kit "*GCC 10.3.1 arm-none-abi*" from the shortcut on the status bar.
 
@@ -47,18 +47,18 @@ To program the RF-Nano follow the installation of the Arduino-IDE with no furthe
 The main files to be uploaded on transmitter and receiver are in order in *./src/* and *./receiver/src/*, while transmitter device libraries are in *./lib/*.
 ## Program layout
 ```
-├── lib									# transmitter device libraries
-│   ├── control
-│   ├── ins
+├── lib									         # pico device libraries
+│   ├── control          # physical control interface
+│   ├── ins              # inertial navigation system
 │   ├── pico-sdk
-│   ├── RF24							# transmitter radio communication library
-│   ├── test_module						# testing utilities
-│   └── transmitter						# transmitter interface
-├── remote								# remote receiver files
+│   ├── RF24             # transmitter radio communication library
+│   ├── test_module      # testing utilities
+│   └── transmitter      # transmitter interface
+├── remote               # remote receiver files
 │   ├── receiver
 │   └── src
 ├── scripts
-├── src
+├── src                  # main program
 └── wirings
 ```
 
