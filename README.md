@@ -15,11 +15,11 @@ Below is the list of the hardware components used in the project.
 | Accelerometer | WT901B |
 | Ultrasonic sensor | GY-US42 |
 | RF module | NRF24L01+ |
-| Data logger | Sparkfun OpenLog |
+| Data logger | OpenLog Datalogger |
 | BEC | IFlight Micro BEC |
-| ESC | Dual-way brushed ESC |
+| ESC | DRV8833 |
 | Squash plate servos | Esky 8g servo |
-| Motors | FK-180 SH |
+| Motors | Mabuchi FK-180 SH |
 | Remote receiver | RF-Nano |
 
 # Software requirements
@@ -36,6 +36,7 @@ Run the following commands to setup the dependecies:
     $ sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
     $ sudo apt install libstdc++-arm-none-eabi-newlib			# only for Debian and Ubuntu
     
+## Note
 Make sure to add compile option `-DPICO_BOARD=waveshare_rp2040_zero` to select the right board configuration.
 If using Microsoft Visual Code editor add `"cmake.configureArgs": ["-DPICO_BOARD=waveshare_rp2040_zero",]`  to the project file *.vscode/settings.json* by opening the command palette (CTRL+SHIFT+P) and selecting "*Preferences: Open Workspace Settings (JSON)*", then install CMake extension and  select kit "*GCC 10.3.1 arm-none-abi*" from the shortcut on the status bar.
 
@@ -51,7 +52,8 @@ The main files to be uploaded on transmitter and receiver are in order in *./src
 │   ├── ins
 │   ├── pico-sdk
 │   ├── RF24							# transmitter radio communication library
-│   └── transmitter						# transmitter interfadce
+│   ├── test_module						# testing utilities
+│   └── transmitter						# transmitter interface
 ├── remote								# remote receiver files
 │   ├── receiver
 │   └── src
