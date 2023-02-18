@@ -1,5 +1,5 @@
 # Helicopter control
-﻿This project is an implementation of a control system for a coaxial helicopter. It relies on a remote radio controller and collects data from multiple sensors which is saved locally and streamed to the controller.
+﻿This project is an implementation of a control system for a coaxial helicopter. It relies on a remote radio controller and collects data from multiple sensors which are saved locally and streamed to the controller.
 ﻿
 # Hardware requirements
 The major part of the source code is platform-dependent and hardware specific but it can be easily ported to other environments. The main boards are:
@@ -36,7 +36,8 @@ Run the following commands to setup the dependecies:
     $ sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
     $ sudo apt install libstdc++-arm-none-eabi-newlib			# only for Debian and Ubuntu
     
-**Note**
+**Note**    
+
 Make sure to add compile option `-DPICO_BOARD=waveshare_rp2040_zero` to select the right board configuration.
 If using Microsoft Visual Code editor add `"cmake.configureArgs": ["-DPICO_BOARD=waveshare_rp2040_zero",]`  to the project file *.vscode/settings.json* by opening the command palette (CTRL+SHIFT+P) and selecting "*Preferences: Open Workspace Settings (JSON)*", then install CMake extension and  select kit "*GCC 10.3.1 arm-none-abi*" from the shortcut on the status bar.
 
@@ -44,10 +45,10 @@ To program the RF-Nano follow the installation of the Arduino-IDE with no furthe
 
     
 # Source code organization
-The main files to be uploaded on transmitter and receiver are in order in *./src/* and *./receiver/src/*, while transmitter device libraries are in *./lib/*.
+The main programs to be uploaded on transmitter and receiver are in order in *./src/* and *./receiver/*, while transmitter device libraries and interfaces are in *./lib/*.
 ## Program layout
 ```
-├── lib									         # pico device libraries
+├── lib                  # pico device libraries
 │   ├── control          # physical control interface
 │   ├── ins              # inertial navigation system
 │   ├── pico-sdk
