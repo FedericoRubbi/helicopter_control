@@ -13,14 +13,14 @@
 // Set to a power of 2 smaller than 256 for efficiency.
 #define CTRL_DER_FILTER_ETA 2
 
-struct PidController
+struct PidController_s
 {
     float k_p; // proportional coefficient
     float k_i; // integral coefficient
     float k_d; // derivative coefficient
 } __attribute__((packed));
 
-struct System
+struct System_s
 {
     // State vector containing acceleration on x, y axes, z coordinate (height) and yaw.
     float state[CTRL_STATE_DIM];
@@ -31,21 +31,22 @@ struct System
     float control[CTRL_STATE_DIM];
     // Control lower and upper boundaries.
     const float ctrl_bound[CTRL_STATE_DIM][2];
-    // Physical control actuators containing in order right and left servo, lower and upper motor.
-    struct Actuator_s actuator[CTRL_STATE_DIM];
+    // Physical control actuators: in order right and left servo, lower and upper motor.
+    struct Servo_s servo[2];
+    struct Motor_s motor[2];
 
     // Pid controllers associated to control vector.
-    struct PidController controllers[CTRL_STATE_DIM];
+    struct PidController_s controllers[CTRL_STATE_DIM];
     // Matrix for the change of bases from state-related PID controls to physical controls.
     float ctrl_dependence[CTRL_STATE_DIM][CTRL_STATE_DIM];
     // Time counter for derivative filter.
     uint8_t time_cnt;
 };
 
-void setup_control(struct System *sys);
-void stop(struct System *sys);
-void takeoff(struct System *sys);
-void compute_control(struct System *sys);
-void update_control(struct System *sys, struct INS_s *ins);
+void setup_control(struct System_s *sys);
+void stop(struct System_s *sys);
+void takeoff(struct System_s *sys);
+void compute_control(struct System_s *sys);
+void update_control(struct System_s *sys, struct INS_s *ins);
 
 #endif // CTRL_H

@@ -7,9 +7,9 @@
 
 static inline float scalar_product(const float x[CTRL_STATE_DIM], const float y[CTRL_STATE_DIM]);
 static inline float set_bounds(float x, const float bound[2]);
-static void get_state(struct System *sys, struct INS_s *ins);
+static void get_state(struct System_s *sys, struct INS_s *ins);
 
-const float pid_integral_bounds[2] = {ACT_M_MAX_MS * 2.0f, ACT_M_MAX_MS * 2.0f};
+const float pid_integral_bounds[2] = {ACT_M_MAX, ACT_M_MAX};
 
 // Fixed-size fast scalar product implementation.
 static inline float scalar_product(const float x[static CTRL_STATE_DIM], const float y[static CTRL_STATE_DIM])
@@ -23,29 +23,29 @@ static inline float set_bounds(const float x, const float bound[static 2])
     return x < bound[0] ? bound[0] : (x > bound[1] ? bound[1] : x);
 }
 
-void setup_control(struct System *sys)
+void setup_control(struct System_s *sys)
 {
-    setup_servos(&sys->actuator[0], &sys->actuator[1]); // setup right and left servos
-    setup_motors(&sys->actuator[2], &sys->actuator[3]); // setup lower and upper motors
+    setup_servos(&sys->servo[0], &sys->servo[1]); // setup right and left servos
+    setup_motors(&sys->motor[0], &sys->motor[1]); // setup lower and upper motors
 }
 
 // Stop procedure.
-void stop(struct System *sys)
+void stop(struct System_s *sys)
 {
-    sys->actuator[2].duty = sys->actuator[3].duty = ACT_M_MIN_MS;
-    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
+    sys->motor[0].duty = sys->motor[1].duty = ACT_M_STOP;
+    update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
 }
 
 // Power motors at minimum power to take off.
-void takeoff(struct System *sys)
+void takeoff(struct System_s *sys)
 {
-    sys->actuator[2].duty = ACT_M_TAKEOFF_MS;
-    sys->actuator[3].duty = ACT_M_TAKEOFF_MS;
-    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
+    sys->motor[0].duty = ACT_M_TAKEOFF;
+    sys->motor[1].duty = ACT_M_TAKEOFF;
+    update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
 }
 
 // Get state from ins.
-static void get_state(struct System *sys, struct INS_s *ins)
+static void get_state(struct System_s *sys, struct INS_s *ins)
 {
     sys->state[0] = (float)ins->imu.acceleration[0]; // acceleration on x axis
     sys->state[1] = (float)ins->imu.acceleration[1]; // acceleration on y axis
@@ -54,7 +54,7 @@ static void get_state(struct System *sys, struct INS_s *ins)
 }
 
 // PID algorithm implementation.
-void compute_control(struct System *sys)
+void compute_control(struct System_s *sys)
 {
     static float error[CTRL_STATE_DIM];         // weighted error vector
     static float err_integral[CTRL_STATE_DIM];  // integral error terms
@@ -83,13 +83,16 @@ void compute_control(struct System *sys)
 };
 
 // PID control procedure.
-void update_control(struct System *sys, struct INS_s *ins)
+void update_control(struct System_s *sys, struct INS_s *ins)
 {
-    get_state(sys, ins);                         // copy state vector
-    compute_control(sys);                        // compute physical control vector
-    for (uint8_t i = 0; i < CTRL_STATE_DIM; ++i) // copy physical control to actuator structs
-        sys->actuator[i].duty = sys->control[i];
+    get_state(sys, ins);  // copy state vector
+    compute_control(sys); // compute physical control vector
+    // Copy physical control to actuator structs.
+    sys->servo[0].duty_period = sys->control[0];
+    sys->servo[1].duty_period = sys->control[1];
+    sys->motor[0].duty = sys->control[2];
+    sys->motor[1].duty = sys->control[3];
 
-    update_servos(&sys->actuator[0], &sys->actuator[1]); // update right and left servos
-    update_motors(&sys->actuator[2], &sys->actuator[3]); // update lower and upper motors
+    update_servos(&sys->servo[0], &sys->servo[1]); // update right and left servos
+    update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
 }
