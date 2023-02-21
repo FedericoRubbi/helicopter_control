@@ -7,6 +7,7 @@ target_include_directories(transmitter
 # pull in common dependencies
 target_link_libraries(transmitter PRIVATE
     pico_stdlib
+    hardware_pwm
     hardware_spi
     hardware_gpio
     RF24

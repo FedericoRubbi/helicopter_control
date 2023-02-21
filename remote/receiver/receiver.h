@@ -6,13 +6,13 @@
 #include <RF24.h>
 #include <RF24_config.h>
 
-#define CE_PIN   10
+#define CE_PIN 10
 #define CSN_PIN 9
 #define PIPE 1
 
 #define PACKET_SIZE 90
 #define PAYLOAD_SIZE 32
-#define PAYLOAD_BUFFER_SIZE ((PACKET_SIZE + PAYLOAD_DATA_SIZE -1 ) /PAYLOAD_DATA_SIZE)
+#define PAYLOAD_BUFFER_SIZE ((PACKET_SIZE + PAYLOAD_DATA_SIZE - 1) / PAYLOAD_DATA_SIZE)
 #define PAYLOAD_DATA_SIZE 31
 
 #define STOP 0x00
@@ -25,7 +25,6 @@
 
 #define SET_EOP 0xFF
 #define UNSET_EOP 0x00
-
 
 struct Packet_s
 {
@@ -46,11 +45,8 @@ struct RxAckPayload_s
 const uint8_t tx_pipe_addr[] = {0x01, 0x02, 0x03, 0x04, 0x05};
 const uint8_t rx_pipe_addr[] = {0x06, 0x07, 0x08, 0x09, 0x0a};
 
-
 void readPacket();
 void sendAck(uint8_t *data);
 void serialEvent();
 
-
-
-#endif
+#endif // RECEIVER_H
