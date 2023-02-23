@@ -9,7 +9,8 @@ extern "C"
 }
 
 // Edit to select transmitter mode. Only one mode can be active.
-#define TX_SERIAL // use uart protocol
+#define TX_SERIAL_SERVER // use uart protocol
+//#define TX_SERIAL_CLIENT // use uart protocol
 // #define TX_RF24   // use spi protocol and RF24 lib
 
 #define TX_PACKET_SIZE INS_PACKET_SIZE
@@ -39,7 +40,7 @@ const uint8_t tx_pipe_addr[] = {0x01, 0x02, 0x03, 0x04, 0x05};
 const uint8_t rx_pipe_addr[] = {0x06, 0x07, 0x08, 0x09, 0x0a};
 #endif
 
-#ifdef TX_SERIAL
+#if defined(TX_SERIAL_CLIENT) | defined(TX_SERIAL_SERVER)
 // Serial communication macros definitions and constants.
 #define TX_UART uart1 // serial port 1
 #define TX_BAUDRATE 115200
@@ -87,7 +88,7 @@ typedef struct RxAckPayload_s Cmd_t;
 #endif
 
 // Serial structures.
-#ifdef TX_SERIAL
+#if defined(TX_SERIAL_CLIENT) | defined(TX_SERIAL_SERVER) 
 struct Cmd_s
 {
     uint8_t cmd_code; // command code

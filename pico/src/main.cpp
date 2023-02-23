@@ -6,8 +6,11 @@
 #include <math.h>
 
 #include "transmitter/transmitter.h"
+#include "test_module/test_module.h"
+
 extern "C"
 {
+#include "datalogger/datalogger.h"
 #include "control/control.h"
 #include "ins/ins.h"
 }
@@ -52,6 +55,7 @@ void setup()
     queue_init(&us_range_queue, sizeof(float), queue_size); // initialize intercore queue
     setup_ins(&ins);
     setup_control(&sys);
+    setup_datalogger();
     setup_transmitter();
 }
 
@@ -65,6 +69,13 @@ void core1_read_range()
 int main()
 {
     setup();
+    sleep_ms(10000);
+    test_servos(&sys);
+    // test_flight(&sys);
+    std::cout << "End of test" << std::endl;
+    while (1)
+        ; // hang execution
+
     multicore_launch_core1(core1_read_range); // take off and hover at minimum sufficient power
     // takeoff(&sys);                            // take off and hover at minimum sufficient power
 
@@ -75,8 +86,9 @@ int main()
         std::cout << "Range read: " << ins.us_range << std::endl;
 
         std::cout << "[DEBUG] Reading IMU data." << std::endl;
-        read_imu_data(&ins.imu);   // read blocking sensor data
-        format_imu_data(&ins.imu); // format raw data
+        read_imu_data(&ins.imu);                                 // read blocking sensor data
+        format_imu_data(&ins.imu);                               // format raw data
+        log_data((uint8_t *)&ins.imu.raw_data, INS_PACKET_SIZE); // save sensor data on microSD card
 
         std::cout << "[DEBUG] Updating system state." << std::endl;
         update_state(&ins);
@@ -105,13 +117,14 @@ int main_for_presentation()
     {
         queue_try_remove(&us_range_queue, &ins.us_range); // check for a new range measurement
 
-        read_imu_data(&ins.imu);   // read sensor data (blocking)
-        format_imu_data(&ins.imu); // format raw data
-        update_state(&ins);        // compute current state given new sensor data
+        read_imu_data(&ins.imu);                                 // read sensor data (blocking)
+        format_imu_data(&ins.imu);                               // format raw data
+        log_data((uint8_t *)&ins.imu.raw_data, INS_PACKET_SIZE); // save sensor data on microSD card
+        update_state(&ins);                                      // compute current state given new sensor data
 
         // update_control(&sys, &ins); // control algorithm not tested
 
         send_packet((struct Packet_s *)&ins.imu.raw_data);
-        check_cmd(&sys);                                       // check and execute commands
+        check_cmd(&sys); // check and execute commands
     }
 }

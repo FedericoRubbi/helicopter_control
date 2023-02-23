@@ -29,16 +29,16 @@ void test_servos(struct System_s *sys)
 void test_motors(struct System_s *sys)
 {
     std::cout << "[TESTING] Testing motors." << std::endl;
-    while (true)
+    for (int i = 0; i < 3; ++i)
     {
-        sys->motor[0].duty = ACT_M_TAKEOFF * 0.8f; // set slightly lower speed
-        sys->motor[1].duty = ACT_M_TAKEOFF * 0.8f;
+        sys->motor[0].duty = 100.f * 0.8f; // set slightly lower speed
+        sys->motor[1].duty = 100.f * 0.8f;
         update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
-        sleep_ms(1000);
+        sleep_ms(4000);
         sys->motor[0].duty = ACT_M_MIN;
         sys->motor[1].duty = ACT_M_MIN;
         update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
-        sleep_ms(4000);
+        sleep_ms(2000);
     }
 }
 
@@ -118,4 +118,22 @@ void test_us_sensor()
     std::cout << "[TESTING] Testing ultrasonic sensor." << std::endl;
     for (float range = 0.0f;; read_range(&range))
         std::cout << "\t range: " << range << std::endl;
+}
+
+void test_flight(struct System_s *sys)
+{
+    std::cout << "[TESTING] Performing flight test, take-off and landing." << std::endl;
+    const float delta_ms = 10000.0f;    // duration of the test in milliseconds
+    const float max_duty = 100.0f; // maximum power as percentage driven to motors
+
+    uint64_t start = to_ms_since_boot(get_absolute_time());
+    for (uint64_t t = 0; t < delta_ms; t = to_ms_since_boot(get_absolute_time()) - start)
+    {
+        // Duty is a quadratic function of the time.
+        sys->motor[0].duty = sys->motor[1].duty = 4.f * max_duty / delta_ms * t * (1.f - t / delta_ms);
+        //sys->motor[0].duty = sys->motor[1].duty = 4.f * max_duty * (t / delta_ms - (t * t / delta_ms / delta_ms));
+        std::cout << "\t t: " << t << "\tduty: " << sys->motor[0].duty << std::endl;
+        update_motors(&sys->motor[0], &sys->motor[1]); // update lower and upper motors
+        sleep_ms(10); // slow down for pwm to take effect
+    }
 }

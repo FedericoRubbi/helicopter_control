@@ -130,11 +130,11 @@ void run_cmd(struct System_s *sys, Cmd_t *cmd)
 }
 #endif
 
-#ifdef TX_SERIAL
+#ifdef TX_SERIAL_CLIENT
 void send_preamble()
 {
     for (uint8_t i = 0; i < TX_PREAMBLE_SIZE; ++i)
-        if (uart_is_writable(TX_UART))
+        if (uart_is_writable(TX_UART)) // false if buffer is full
             uart_write_blocking(TX_UART, &tx_preamble[i], sizeof(tx_preamble[i]));
 }
 
@@ -146,7 +146,7 @@ bool connect_transmitter()
     {
         sleep_ms(100);
         send_preamble();
-        if (uart_is_readable_within_us(TX_UART, 1000)) // await 1ms for response
+        if (uart_is_readable_within_us(TX_UART, 2000)) // await for response
         {
             uart_read_blocking(TX_UART, &resp, sizeof(resp));
             connected = (resp == TX_CONNECTED_FLAG);
@@ -155,21 +155,25 @@ bool connect_transmitter()
     return connected;
 }
 
+// Send logic packet to receiver.
+void send_packet(struct Packet_s *packet)
+{
+    if (uart_is_writable(TX_UART))
+        uart_write_blocking(TX_UART, packet->sensor_data, TX_PACKET_SIZE);
+}
+#endif
+
+#if defined(TX_SERIAL_CLIENT) | defined(TX_SERIAL_SERVER)
 // Setup serial communication.
 bool setup_transmitter()
 {
     uart_init(TX_UART, TX_BAUDRATE);
     gpio_set_function(TX_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(TX_RX_PIN, GPIO_FUNC_UART);
+#ifdef TX_SERIAL_CLIENT
     connect_transmitter(); // wait for receiver serial device to listen
+#endif
     return true;
-}
-
-// Send logic packet to receiver.
-void send_packet(struct Packet_s *packet)
-{
-    if (uart_is_writable(TX_UART))
-        uart_write_blocking(TX_UART, packet->sensor_data, TX_PACKET_SIZE);
 }
 
 // Read command acknowledge packet from receiver.

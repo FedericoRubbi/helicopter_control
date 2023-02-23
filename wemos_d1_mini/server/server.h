@@ -1,0 +1,7 @@
+#ifndef SERIAL_SERVER
+#define SERIAL_SERVER
+
+#define BAUDRATE 115200
+#define UPDATE_MS 500
+
+#endif // SERIAL_SERVER

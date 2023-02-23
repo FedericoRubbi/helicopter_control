@@ -8,6 +8,7 @@ setup_string = """
 ********************************************************************************
 *							      REMOTE CONTROL							   *
 ********************************************************************************
+Run "hostname -I" to get local ip address. Communication port is 8081.
 
 Enter "CTRL"+"C" to write command.
 Available commands:
@@ -82,7 +83,8 @@ def main():
 
 
 def main():
-    server_address = ('127.0.0.1', 8081)
+    print(setup_string)
+    server_address = ('127.0.0.1', 8081) # run "$ hostname -I" to get local address
     httpd = HTTPServer(server_address, ControllerServer)
     httpd.serve_forever()
     print(setup_string)

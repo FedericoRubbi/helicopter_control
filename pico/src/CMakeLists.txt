@@ -13,6 +13,8 @@ target_link_libraries(main PUBLIC
     ins
     control
     transmitter
+    datalogger
+    test_module
 )
 
 # Stdio output is sent to USB for debugging instead of UART.
