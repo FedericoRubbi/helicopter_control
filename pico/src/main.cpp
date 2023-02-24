@@ -69,12 +69,6 @@ void core1_read_range()
 int main()
 {
     setup();
-    sleep_ms(10000);
-    test_servos(&sys);
-    // test_flight(&sys);
-    std::cout << "End of test" << std::endl;
-    while (1)
-        ; // hang execution
 
     multicore_launch_core1(core1_read_range); // take off and hover at minimum sufficient power
     // takeoff(&sys);                            // take off and hover at minimum sufficient power
@@ -103,28 +97,6 @@ int main()
         std::cout << "[DEBUG] sending packet." << std::endl;
         send_packet((struct Packet_s *)&ins.imu.raw_data);
         check_cmd(&sys);
-        sleep_ms(500);
-    }
-}
-
-int main_for_presentation()
-{
-    setup();
-    multicore_launch_core1(core1_read_range); // start ultrasonic sensor readings on the second core
-    takeoff(&sys);                            // take off and hover at minimum sufficient power
-
-    while (true) // main loop
-    {
-        queue_try_remove(&us_range_queue, &ins.us_range); // check for a new range measurement
-
-        read_imu_data(&ins.imu);                                 // read sensor data (blocking)
-        format_imu_data(&ins.imu);                               // format raw data
-        log_data((uint8_t *)&ins.imu.raw_data, INS_PACKET_SIZE); // save sensor data on microSD card
-        update_state(&ins);                                      // compute current state given new sensor data
-
-        // update_control(&sys, &ins); // control algorithm not tested
-
-        send_packet((struct Packet_s *)&ins.imu.raw_data);
-        check_cmd(&sys); // check and execute commands
+        sleep_ms(50);
     }
 }

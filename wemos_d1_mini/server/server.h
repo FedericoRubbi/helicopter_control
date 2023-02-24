@@ -2,6 +2,6 @@
 #define SERIAL_SERVER
 
 #define BAUDRATE 115200
-#define UPDATE_MS 500
+#define UPDATE_MS 50
 
 #endif // SERIAL_SERVER

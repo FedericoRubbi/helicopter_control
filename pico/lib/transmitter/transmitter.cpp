@@ -154,16 +154,18 @@ bool connect_transmitter()
     }
     return connected;
 }
+#endif
+
+#if defined(TX_SERIAL_CLIENT) | defined(TX_SERIAL_SERVER)
 
 // Send logic packet to receiver.
 void send_packet(struct Packet_s *packet)
 {
+    std::cout << "[DEBUG] sending packet. Uart available: " << uart_is_writable(TX_UART) << std::endl;
     if (uart_is_writable(TX_UART))
         uart_write_blocking(TX_UART, packet->sensor_data, TX_PACKET_SIZE);
 }
-#endif
 
-#if defined(TX_SERIAL_CLIENT) | defined(TX_SERIAL_SERVER)
 // Setup serial communication.
 bool setup_transmitter()
 {

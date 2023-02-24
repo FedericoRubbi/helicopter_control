@@ -42,6 +42,14 @@ void setup()
 
 void loop()
 {
-    WebSerial.println("[DEBUG] Running.");
+    if (Serial.available())
+        serialEvent();
     delay(UPDATE_MS);
+}
+
+void serialEvent()
+{
+    for (char character; Serial.available(); WebSerial.print(character))
+        character = Serial.read(); // read byte
+    
 }
